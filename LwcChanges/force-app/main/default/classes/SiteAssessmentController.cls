@@ -1,6 +1,6 @@
 public with sharing class SiteAssessmentController {
     
-    
+    //coment data on 2024
     @AuraEnabled
     public static String getServiceAppointmentStatus(String serviceAppointmentId){
         ServiceAppointment sa =  [select Id, Status from ServiceAppointment where Id =: serviceAppointmentId limit 1];
