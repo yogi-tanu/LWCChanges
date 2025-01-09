@@ -1,0 +1,164 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+    <template if:true={loading}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+    <template if:false={completed}>
+        <template if:false={submitted}>
+            <div class="maincmp">
+                <template if:true={noCheckListData}>
+                    <div
+                        class="slds-align_absolute-center slds-text-heading_small slds-text-color_error slds-m-vertical_medium">
+                        No checklist data for this Service Appointment record.
+                    </div>
+                </template>
+                <template if:true={error}>
+                    <div
+                        class="slds-align_absolute-center slds-text-body_regular slds-text-color_error slds-m-vertical_medium">
+                        {error}
+                    </div>
+                </template>
+                <template if:false={noCheckListData}>
+                    <lightning-accordion active-section-name={activeSections}>
+                        <template if:true={checkListItems} for:each={checkListItems} for:item="rec" for:index="index">
+                            <lightning-accordion-section class="slds-accordion__section" key={rec.checkListLabel}
+                                name={rec.checkListLabel} label={rec.checkListLabel} data-id={rec.checkListLabel}
+                                style="--slds-c-accordion-summary-color-background: #EEEEEE;" onclick={handleScroll}>
+                                <template if:true={rec.checkListItems} for:each={rec.checkListItems}
+                                    for:item="question">
+                                    <div key={question.checkListId}
+                                        style="border-bottom: .5px solid lightgray;padding-bottom:10px;margin-top: 10px;">
+                                        <c-question-component checklistlabel={rec.checkListLabel}
+                                            question-data={question} 
+                                            onresponsedata={handleQuesResponse}
+                                            onimageupload={handleQuestionImageUpload}
+                                            onnotesedit={handleQuestionNotesEdit}
+                                            onnotesdone={handleQuestionNotesDone}
+                                            ></c-question-component>
+                                    </div>
+                                </template>
+                            </lightning-accordion-section>
+                        </template>
+                    </lightning-accordion>
+                </template>
+                <div class="slds-align_absolute-center">
+                    <lightning-button variant="brand" label="Submit" title="submit"
+                        onclick={handleSubmit}></lightning-button>
+                </div>
+            </div>
+            <template if:true={openImageUploadModal}>
+                <div class="image-uploader" style="height:100%;width:100%;">
+        <!--########################################### Add All uploadImageAnnotation  ################################################### -->
+         <div
+         class="slds-grid slds-grid_vertical"
+         style="background-color: white; height: 100%"
+         >
+         <c-image-selector
+             if:false={isImageSelected}
+             all-images-data={allImagesData}
+             onselectimages={handleImagesSelected}
+             ondelete={handleDeleteImage}
+             onannotateimage={handleAnnotateImage}
+             onuploadrequest={handleUploadRequested}
+             oncancelclick={closeImageUploadModal}
+             style="height: 100%;width:100%"
+           ></c-image-selector>
+           <c-image-annotate
+             if:true={isImageSelected}
+             image-info={selectedImageInfo}
+             onsave={handleSaveAnnotatedImage}
+             ondiscard={handleImageDiscarded}
+             ondelete={handleDeleteImage}
+             style="height: 100%;width:100%"
+           ></c-image-annotate>
+         </div>
+       
+         <c-toast-message
+           if:true={shouldShowToast}
+           message={toastMessage}
+           type={toastType}
+           onclose={hideToast}
+         ></c-toast-message>
+       
+         <c-loading-spinner
+           if:true={isUploading}
+           loading-message="Uploading..."
+         ></c-loading-spinner>
+         <c-loading-spinner if:true={isReading} loading-message=""></c-loading-spinner>
+         <!-- ######################################################### End ############################################################--> 
+              <!--      <c-image-uploader label={currentLabel} check-list-item={currentCheckListId}
+                        sort-order={currentSortOrder} file-name={currentFileName} onuploadimages={handleImagesUpload} oncancelclick={closeImageUploadModal}></c-image-uploader> -->
+                </div>
+            </template>
+        </template>
+        <template if:true={submitted}>
+            <div class="slds-text-heading_small slds-m-around_medium">
+                Thank you for submitting your responses.
+            </div>
+        </template>
+    </template>
+    <template if:true={completed}>
+        <div class="slds-text-heading_small slds-m-around_medium">
+            The site assessment has already been completed.
+        </div>
+    </template>
+
+    <template if:true={notesModalOpen}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- modal header start -->
+                <!-- <header class="slds-modal__header"> -->
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                    onclick={hideModalBox}>
+                    <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                        size="small"></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>>
+
+                <!-- modal body start -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-textarea name="inputname" label="Enter Notes" placeholder="type here..."
+                        value={currentNotes} onblur={handleNotesUpdate}></lightning-textarea>
+                    <div class="slds-m-top_small slds-clearfix">
+                        <div class="slds-float_right">
+                            <lightning-button-icon style="cursor: pointer;" icon-name="utility:check" size="x-small"
+                                onclick={handleNotesDone} variant="brand"></lightning-button-icon>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={confirmationModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true"
+            aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- modal header start -->
+                <!-- <header class="slds-modal__header"> -->
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                    onclick={hideModalBox}>
+                    <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+
+                <!-- modal body start -->
+                <div class="slds-modal__content slds-p-around_medium slds-text-title_bold" id="modal-content-id-2">
+                    
+                    Please note once you Submit, you cannot make any changes to the Site Appointment and cannot upload any more photos?
+                    
+                    <div class="slds-modal__footer">
+                            <lightning-button variant="neutral" label="No" title="no" onclick={handleNo}></lightning-button>
+                            <lightning-button class="slds-m-left_small" variant="brand" label="Yes" title="yes" onclick={handleYes}></lightning-button>
+                        </div>
+                    </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

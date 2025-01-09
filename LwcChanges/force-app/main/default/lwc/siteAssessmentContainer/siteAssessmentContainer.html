@@ -1,0 +1,19 @@
+<template>
+    <div class="container slds-theme_default">
+        <template if:false={startAssessment}>
+            <div class="slds-p-around_small">
+                <button label="Start Site Assessment" class="slds-button slds-button_brand slds-button_stretch" name="startassessment" onclick={handleStartAssessment}>Start Site Assessment</button>
+            </div>
+        </template>
+        <template if:true={startAssessment}>
+          <!--<c-offline-checklist record-id={recordId} onsubmitclick={handleSubmitContainer}></c-offline-checklist>-->
+       <!--   <c-perform-site-assessment-_-new record-id={recordId} onsubmitclick={handleSubmitContainer}></c-perform-site-assessment-_-new>-->
+        <c-perform-site-assessment record-id={recordId} onsubmitclick={handleSubmitContainer}></c-perform-site-assessment>
+        </template>
+        <template if:true={submitted}>
+            <div class="slds-text-heading_small">
+                Thank you for submitting your responses.
+            </div>
+        </template>
+    </div>
+</template>

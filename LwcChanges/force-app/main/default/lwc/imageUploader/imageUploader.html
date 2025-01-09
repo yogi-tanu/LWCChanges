@@ -1,0 +1,35 @@
+<template>
+    <div if:true={error} class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+        <b>{error}</b>
+    </div>
+    <div class="slds-m-around_medium">
+        <label class="custom-file-upload">
+            <!-- <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" onchange={handleUploadFile} /> -->
+            <form>
+                <lightning-input
+                    type="file"
+                    accept="image/*"
+                    onchange={handleUploadFile}
+                    data-name="sel">
+                </lightning-input>
+                <lightning-icon size="xx-small" icon-name="utility:photo"></lightning-icon>
+            </form>
+        </label>
+        <!-- <lightning-input
+                type="file"
+                accept="image/*"
+                onchange={handleUploadFile}> 
+        </lightning-input> -->
+        <lightning-layout>
+            <template if:true={images} for:each={images} for:item="image" for:index="index">
+                <lightning-layout-item key={image} padding="around-small">
+                    <img src={image} />
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+        <div class="slds-m-top_medium">
+            <lightning-button variant="brand" label="Upload Images" title="uploadImages" onclick={handleUpload}></lightning-button>
+            <lightning-button class="slds-m-left_medium" variant="base" label="Cancel" title="cancel" onclick={handleCancel}></lightning-button>
+        </div>
+    </div>
+</template>

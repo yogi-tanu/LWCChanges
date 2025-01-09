@@ -1,0 +1,112 @@
+<template>
+    <!-- <div class="slds-text-body_regular slds-m-bottom_xx-small" style="text-align: justify;text-justify: inter-character;"> -->
+    <div if:true={questionData.error} class="slds-align_absolute-center slds-text-body_regular slds-text-color_error slds-align_absolute-center">
+        {questionData.error}
+    </div>
+    
+    <div class="slds-text-body_regular slds-m-bottom_xx-small">
+        <div class="slds-grid" style="width:97%;">
+            
+            <span if:true={IsMinimumImageComplete}  style="font-family: Arial Unicode MS, Lucida Grande Green">
+                &#x2705;
+                
+            </span>
+            
+            <div class="slds-col slds-size_10-of-12">
+                {questionData.summary}
+                <lightning-helptext if:true={questionData.specifics} content={questionData.specifics}></lightning-helptext>
+            </div>
+            <div class="slds-col slds-size_1-of-12">
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2" style="padding-top:5px;">
+                        <template if:true={showBoolDetails}>
+                            <lightning-icon variant={uploadVariant} size="xx-small" icon-name="utility:upload" onclick={handleImageUpload}></lightning-icon>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <template if:true={showBoolDetails}>
+                            <span if:true={questionData.imageCount} class="imagecount">{questionData.imageCount}</span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-12">
+                <template if:false={questionData.showNotesInput}>
+                    <template if:false={questionData.notes}>
+                        <lightning-helptext icon-name="utility:edit" content={questionData.notes} ondblclick={handleNotesEdit}></lightning-helptext>
+                    </template>
+                    <template if:true={questionData.notes}>
+                        <lightning-helptext icon-name="utility:display_text" if:true={questionData.notes} content={questionData.notes} ondblclick={handleNotesEdit}></lightning-helptext>
+                    </template>
+                </template>
+            </div>
+        </div>
+        <!-- <div class="slds-m-left_small">
+            {questionData.summary}
+            <lightning-helptext if:true={questionData.specifics} content={questionData.specifics}></lightning-helptext>
+            <span style="margin-left:5px;cursor: pointer;">
+                <lightning-icon size="xx-small" icon-name="utility:upload" onclick={handleImageUpload}></lightning-icon>
+                <template if:true={questionData.requirePicture}><span style="color:crimson;font-size: 15px;">*</span></template>
+            </span>
+            <span if:true={questionData.imageCount} class="imagecount">{questionData.imageCount}</span>
+            <span class="slds-m-left_xx-small" if:true={questionData.isImage}>
+                <template if:false={questionData.showNotesInput}>
+                    <lightning-helptext icon-name="utility:edit" content={questionData.notes} ondblclick={handleNotesEdit}></lightning-helptext>
+                </template>
+            </span>
+        </div> -->
+    </div>
+    <template if:true={questionData.isText}>
+        <input value={questionData.notes} type="text" name={questionData.checkListId} onblur={handleResponse}></input>
+    </template>
+    <template if:true={questionData.isNumber}>
+        <input value={questionData.notes} type="number" name={questionData.checkListId} onblur={handleResponse}></input>
+    </template>
+    <template if:true={questionData.isImage}>
+        <template if:true={questionData.showNotesInput}>
+            <input value={questionData.notes} type="text" name={questionData.checkListId} onblur={handleResponse}></input>
+            <div class="slds-m-top_x-small">
+                <lightning-button-icon style="cursor: pointer;" icon-name="utility:check" size="xx-small" onclick={handleNotesDone} variant="brand"></lightning-button-icon>
+            </div> 
+        </template>
+    </template>
+    <template if:true={questionData.isBoolean}>
+        <!-- <input type="checkbox" name="input1" checked={checkBoxValue} onchange={handleResponse}></input> -->
+        <lightning-radio-group name={questionData.checkListId} disabled={isSubmit} variant="label-hidden" options={booleanOptions} value={radioValue} onchange={handleBooleanResponse}></lightning-radio-group>
+        <!-- <template for:each={booleanOptions} for:item="option">
+            <div key={questionData.checkListId}>
+                <input key={questionData.checkListId} type="radio" name={questionData.checkListId} value={option.value} onchange={handleBooleanResponse} checked={option.selected}>
+                <label key={questionData.checkListId} for={option.value}>&nbsp;{option.label}</label>
+            </div>
+        </template> -->
+        <template if:true={showBoolDetails}>
+            <input value={booleanResponseText} type="text" name={questionData.checkListId} onblur={handleResponse}></input>
+        </template>
+    </template>
+    <template if:true={questionData.isPicklist}>
+        <!-- <lightning-combobox name={questionData.checkListId}
+                
+                options={questionData.options}
+                variant="label-hidden"
+                value={questionData.notes}
+                placeholder="Select Value"
+                onchange={handleResponse}></lightning-combobox> -->
+        <div class="selectdiv">
+            <select name={questionData.checkListId} onchange={handleResponse} placeholder="Please Select">
+                <template if:true={localOptions} for:each={localOptions} for:item="option">
+                    <option key={option.value} value={option.value} selected={option.selected}>{option.label}</option>
+                </template>
+            </select>
+        </div>
+    </template>
+    <template if:true={questionData.dependentChecklistItems}>
+    <!-- if:true={showDependents} Yk 05-10-23 Bypass Show Condition -->
+        <div  class="slds-m-around_xx-small slds-box">
+            <template for:each={questionData.dependentChecklistItems} for:item="dependent">
+                <div key={dependent.checkListId} style = "border-bottom: .5px solid lightgray;padding-bottom:10px;margin-top: 10px;">
+                    <c-question-component question-data={dependent} onresponsedata={handleDependentResponse} onimageupload={handleDependentImageUpload}></c-question-component>
+                </div>
+            </template>
+        </div>
+  </template>
+</template>

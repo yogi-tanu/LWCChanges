@@ -1,0 +1,16 @@
+img{
+    height: 40px;
+    width: 40px;
+    border: .5px blue solid;
+}
+
+lightning-input{
+    display: none;
+}
+
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}

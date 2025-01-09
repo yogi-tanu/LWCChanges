@@ -1,0 +1,36 @@
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    /* border: 1px solid #ccc; */
+    display: inline-block;
+    /* padding: 6px 12px; */
+    cursor: pointer;
+}
+
+.imagecount{
+    font-size: 10px;
+    color: crimson;
+    vertical-align: super;
+}
+
+select{
+    width: 100%;
+    background-color: #EEEEEE;
+    height: 40px;
+    border: none;
+    padding: 5px;
+    border-bottom: 1px black solid;
+    border-radius: 5px 5px 0 0;
+}
+
+input[type="text"],input[type="number"]{
+    width: 100%;
+    background-color: #EEEEEE;
+    height: 40px;
+    border: none;
+    padding: 5px;
+    border-bottom: 1px black solid;
+    border-radius: 5px 5px 0 0;
+}
